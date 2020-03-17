@@ -31,4 +31,4 @@ jobs:
           env
           export
           
-          ls -la
+          grunt
