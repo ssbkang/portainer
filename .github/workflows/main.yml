@@ -11,7 +11,7 @@ on:
       - '*'
 
 jobs:
-  build:
+  build_artefacts:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout the current branch
@@ -23,8 +23,14 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v1
         with:
-          node-version: '11.x'
-      - name: Enable Yarn
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: install
+          node-version: '11.15.0'
+      - run: yarn install
+      # - uses: azure/docker-login@v1
+      #   with:
+      #     login-server: contoso.azurecr.io
+      #     username: ${{ secrets.REGISTRY_USERNAME }}
+      #     password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      # - run: |
+      #     docker build . -t contoso.azurecr.io/k8sdemo:${{ github.sha }}
+      #     docker push contoso.azurecr.io/k8sdemo:${{ github.sha }}
