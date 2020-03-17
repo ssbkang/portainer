@@ -28,3 +28,7 @@ jobs:
         run: |
           yarn install
           docker version
+          env
+          export
+          
+          ls -la
