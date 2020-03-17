@@ -65,7 +65,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.task.registerTask('release', 'release:<platform>:<arch>',
-    function (p = 'linux', a = arch) {
+    function (p = platform, a = arch) {
       grunt.task.run([
         'config:prod',
         'env:prod',
@@ -77,18 +77,18 @@ module.exports = function(grunt) {
       ]);
     });
 
-  grunt.task.registerTask('devopsbuild', 'devopsbuild:<platform>:<arch>',
-    function(p, a) {
-      grunt.task.run([
-        'config:prod',
-        'env:prod',
-        'clean:all',
-        'copy:assets',
-        'shell:build_binary.sh:' + p + ':' + a,
-        'shell:download_docker_binary:' + p + ':' + a,
-        'webpack:prod'
-      ]);
-    });
+//   grunt.task.registerTask('devopsbuild', 'devopsbuild:<platform>:<arch>',
+//     function(p, a) {
+//       grunt.task.run([
+//         'config:prod',
+//         'env:prod',
+//         'clean:all',
+//         'copy:assets',
+//         'shell:build_binary.sh:' + p + ':' + a,
+//         'shell:download_docker_binary:' + p + ':' + a,
+//         'webpack:prod'
+//       ]);
+//     });
 };
 
 /***/
@@ -153,7 +153,7 @@ gruntfile_cfg.copy = {
 
 gruntfile_cfg.shell = {
   build_binary: { command: shell_build_binary },
-  build_binary_azuredevops: { command: shell_build_binary_azuredevops },
+//   build_binary_azuredevops: { command: shell_build_binary_azuredevops },
   download_docker_binary: { command: shell_download_docker_binary },
   run_container: { command: shell_run_container }
 };
@@ -179,13 +179,13 @@ function shell_build_binary(p, a) {
 //   }
 }
 
-function shell_build_binary_azuredevops(p, a) {
-  if (p === 'linux') {
-    return 'build/build_binary_azuredevops.sh ' + p + ' ' + a + ';';
-  } else {
-    return 'powershell -Command ".\\build\\build_binary_azuredevops.ps1 -platform ' + p + ' -arch ' + a + '"';
-  }
-}
+// function shell_build_binary_azuredevops(p, a) {
+//   if (p === 'linux') {
+//     return 'build/build_binary_azuredevops.sh ' + p + ' ' + a + ';';
+//   } else {
+//     return 'powershell -Command ".\\build\\build_binary_azuredevops.ps1 -platform ' + p + ' -arch ' + a + '"';
+//   }
+// }
 
 function shell_run_container() {
   return [
@@ -200,7 +200,7 @@ function shell_download_docker_binary(p, a) {
   var ip = ((ps[p] === undefined) ? p : ps[p]);
   var ia = ((as[a] === undefined) ? a : as[a]);
   var binaryVersion = ((p === 'windows' ? '<%= shippedDockerVersionWindows %>' : '<%= shippedDockerVersion %>'));
-  if (p === 'linux' || p === 'mac') {
+//   if (p === 'linux' || p === 'mac') {
     return [
       'if [ -f dist/docker ]; then',
       'echo "Docker binary exists";',
@@ -208,13 +208,14 @@ function shell_download_docker_binary(p, a) {
       'build/download_docker_binary.sh ' + ip + ' ' + ia + ' ' + binaryVersion + ';',
       'fi'
     ].join(' ');
-  } else {
-    return [
-      'powershell -Command "& {if (Get-Item -Path dist/docker.exe -ErrorAction:SilentlyContinue) {',
-      'Write-Host "Docker binary exists"',
-      '} else {',
-      '& ".\\build\\download_docker_binary.ps1" -docker_version ' + binaryVersion + '',
-      '}}"'
-    ].join(' ');
-  }
+//   } 
+//   else {
+//     return [
+//       'powershell -Command "& {if (Get-Item -Path dist/docker.exe -ErrorAction:SilentlyContinue) {',
+//       'Write-Host "Docker binary exists"',
+//       '} else {',
+//       '& ".\\build\\download_docker_binary.ps1" -docker_version ' + binaryVersion + '',
+//       '}}"'
+//     ].join(' ');
+//   }
 }
