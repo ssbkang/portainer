@@ -27,4 +27,4 @@ jobs:
       - name: Build Portainer Binaries
         run: |
           yarn install          
-          grunt build_binary:linux:amd64 --gruntfile gruntfile.js
+          grunt release:linux:amd64 --gruntfile gruntfile.js
