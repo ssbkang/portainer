@@ -31,3 +31,4 @@ jobs:
           mv dist dist_linux_amd64
           ls -la
           ls -la dist_linux_amd64
+          grunt release:windows:amd64 --gruntfile gruntfile.js
