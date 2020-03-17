@@ -26,9 +26,5 @@ jobs:
           node-version: '11.15.0'
       - name: Install Yarn
         run: |
-          yarn install
-          docker version
-          env
-          export
-          
-          grunt
+          yarn install          
+          grunt --help
