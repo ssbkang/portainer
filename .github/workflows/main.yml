@@ -28,5 +28,7 @@ jobs:
         run: |
           yarn install          
           grunt release:linux:amd64 --gruntfile gruntfile.js
+          mv dist dist_linux_amd64
+          grunt release:windows:amd64 --gruntfile gruntfile.js
           ls -la
-          ls dist
+          ls -la dist
