@@ -160,7 +160,7 @@ gruntfile_cfg.shell = {
 
 function shell_build_binary(p, a) {
   var binfile = 'dist/portainer';
-  if (p === 'linux') {
+//   if (p === 'linux') {
     return [
       'if [ -f ' + (binfile) + ' ]; then',
       'echo "Portainer binary exists";',
@@ -168,15 +168,15 @@ function shell_build_binary(p, a) {
       'build/build_binary.sh ' + p + ' ' + a + ';',
       'fi'
     ].join(' ');
-  } else {
-    return [
-      'powershell -Command "& {if (Get-Item -Path ' + binfile + '.exe -ErrorAction:SilentlyContinue) {',
-      'Write-Host "Portainer binary exists"',
-      '} else {',
-      '& ".\\build\\build_binary.ps1" -platform ' + p + ' -arch ' + a + '',
-      '}}"'
-    ].join(' ');
-  }
+//   } else {
+//     return [
+//       'powershell -Command "& {if (Get-Item -Path ' + binfile + '.exe -ErrorAction:SilentlyContinue) {',
+//       'Write-Host "Portainer binary exists"',
+//       '} else {',
+//       '& ".\\build\\build_binary.ps1" -platform ' + p + ' -arch ' + a + '',
+//       '}}"'
+//     ].join(' ');
+//   }
 }
 
 function shell_build_binary_azuredevops(p, a) {
