@@ -84,7 +84,7 @@ module.exports = function(grunt) {
         'env:prod',
         'clean:all',
         'copy:assets',
-        'shell:build_binary_azuredevops:' + p + ':' + a,
+        'shell:build_binary.sh:' + p + ':' + a,
         'shell:download_docker_binary:' + p + ':' + a,
         'webpack:prod'
       ]);
