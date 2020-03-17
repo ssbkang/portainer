@@ -24,6 +24,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '11.x'
-      - run: |
-          yarn install
-          yarn publish
+      - name: Enable Yarn
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: install
