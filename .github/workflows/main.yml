@@ -61,12 +61,12 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           # login-server: # default is https://index.docker.io/v1/
       - name: Build and Push Linux Docker Images
-        if: matrix.config.os == "linux"
+        if: matrix.config.os == 'linux'
         run: |
           mv dist_${{ matrix.config.os }} dist
           ls
       - name: Build and Push Windows Docker Images
-        if: matrix.config.os == "windows"
+        if: matrix.config.os == 'windows'
         run: |
           mv dist_${{ matrix.config.os }} dist
           ls
