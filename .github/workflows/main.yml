@@ -80,7 +80,7 @@ jobs:
       - name: Build and Push Windows Docker Images
         if: matrix.config.os == 'windows'
         run: |
-          mv dist_${{ matrix.config.os }} dist
+          ls
           
           if (${{ github.event.pull_request.labels.name }}) {
               $prefix = "pr${{ github.event.pull_request.labels.name }}"
@@ -98,6 +98,6 @@ jobs:
               @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1909-amd64"}) | % { New-Object object | Add-Member -NotePropertyMembers $_ -PassThru }
 
           foreach ($base in $windows_base) {
-              $base.Image
-              $base.Tag
+            $base.Image
+            $base.Tag
           }
