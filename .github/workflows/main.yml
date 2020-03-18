@@ -53,12 +53,16 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - name: Set Container Image Tag From PR
+      - name: Set Container Image Tag From Branch
         run: |
           echo "Image Tag for the container will be: ${{ env.CONTINAER_IMAGE_TAG }}"
         env:
           CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-          if: github.event.pull_request.labels.name != ''
+      - name: Set Container Image Tag From PR
+        if: github.event.pull_request.labels.name != ''
+        run: |
+          echo "Image Tag for the container will be: ${{ env.CONTINAER_IMAGE_TAG }}"
+        env:
           CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
         
       - name: Download artifact
