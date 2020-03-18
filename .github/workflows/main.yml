@@ -17,7 +17,7 @@ jobs:
         os: [linux, windows]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the current branch
+      - name: Checkout the Current Branch
         uses: actions/checkout@v2
       - name: Setup Go
         uses: actions/setup-go@v1.0.0
@@ -32,7 +32,7 @@ jobs:
           yarn install          
           grunt release:${{ matrix.os }}:amd64 --gruntfile gruntfile.js
           mv dist dist_${{ matrix.os }}         
-      - name: Upload artifact
+      - name: Upload Artefact
         uses: actions/upload-artifact@v1.0.0
         with:
           name: dist_${{ matrix.os }}
@@ -43,4 +43,12 @@ jobs:
       matrix:
         os: [linux, windows]
     runs-on: ${{ matrix.os }}-latest
-      
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v1.0.0
+        with:
+          name: dist_${{ matrix.os }}
+          path: dist_${{ matrix.os }}
+      - name: Build Docker Images
+        run: |
+          ls
