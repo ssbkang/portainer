@@ -41,13 +41,10 @@ jobs:
     needs: build_artefacts
     strategy:
       matrix:
+        image: [mcr.microsoft.com/windows/nanoserver:1809-amd64, mcr.microsoft.com/windows/nanoserver:1903-amd64, mcr.microsoft.com/windows/nanoserver:1909-amd64]
         config: 
-          - {os: linux, distribution: ubuntu-18.04}
-          - {os: windows, distribution: windows-2019}
-        image:
-          - {base: mcr.microsoft.com/windows/nanoserver, tag: 1809-amd64}
-          - {base: mcr.microsoft.com/windows/nanoserver, tag: 1903-amd64}
-          - {base: mcr.microsoft.com/windows/nanoserver, tag: 1909-amd64}
+        - {os: linux, distribution: ubuntu-18.04}
+        - {os: windows, distribution: windows-2019}
     
     runs-on: ${{ matrix.config.distribution }}
     steps:
