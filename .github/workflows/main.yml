@@ -37,7 +37,7 @@ jobs:
         with:
           name: dist_${{ matrix.os }}
           path: dist_${{ matrix.os }}
-  build_and_container_images:
+  build_images:
     needs: build_artefacts
     strategy:
       matrix:        
@@ -83,19 +83,48 @@ jobs:
         env:
           CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
           if: github.event.pull_request.labels.name != ''
-          CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
+          CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
         shell: powershell
         if: matrix.config.os == 'windows'
         run: | 
           mv dist_${{ matrix.config.os }} dist
-
+          
+          systeminfo
+          
           $windows_base = @(
-            @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1809-amd64"},
-            @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1903-amd64"}) | % { New-Object object | Add-Member -NotePropertyMembers $_ -PassThru }
+            @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1809-amd64"}) | % { New-Object object | Add-Member -NotePropertyMembers $_ -PassThru }
+            # @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1903-amd64"}),
             # @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1909-amd64"}) 
 
           foreach ($base in $windows_base) {
               docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" -t "ssbkang/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
               docker push "ssbkang/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)"
           }
-          
+  build_manifests:
+    needs: build_images    
+    runs-on: ubuntu-18.04
+    steps:     
+      - name: Docker Login
+        uses: Azure/docker-login@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          # login-server: # default is https://index.docker.io/v1/ 
+      - name: Build and Push Windows Docker Images
+        env:
+          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          if: github.event.pull_request.labels.name != ''
+          CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
+        run: |
+          sed -i 's/"VSTS"}/"VSTS"}, "experimental": "enabled"/g' "${DOCKER_CONFIG}/config.json"
+
+          docker -D manifest create \
+              "ssbkang/portainer:$CONTINAER_IMAGE_TAG" \
+              "ssbkang/portainer:$CONTINAER_IMAGE_TAG-linux-amd64" \
+              "ssbkang/portainer:$CONTINAER_IMAGE_TAG-windows1809-amd64"
+
+          docker -D manifest create \
+              "ssbkang/portainer:$CONTINAER_IMAGE_TAG" \
+              "ssbkang/portainer:$CONTINAER_IMAGE_TAG-linux-amd64"
+
+          docker -D manifest push "ssbkang/portainer:$CONTINAER_IMAGE_TAG"         
