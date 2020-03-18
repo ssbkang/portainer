@@ -71,12 +71,10 @@ jobs:
         env:
           CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
           if: github.event.pull_request.labels.name != ''
-          CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
+          CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
         if: matrix.config.os == 'linux'
         run: |
           mv dist_${{ matrix.config.os }} dist
-          
-          env
           
           docker build -t "ssbkang/portainer:${CONTAINER_IMAGE_TAG}" -f build/linux/Dockerfile .
           docker push "ssbkang/portainer:${CONTAINER_IMAGE_TAG}"
