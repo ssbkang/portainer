@@ -58,7 +58,7 @@ jobs:
         run: |
           echo ${{ env.CONTINAER_IMAGE_TAG }}
         if: github.event.pull_request.labels.name
-      - env:
+        env:
           CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
         
       - name: Download artifact
