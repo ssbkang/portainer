@@ -1,4 +1,3 @@
-binary="portainer"
 mkdir -p dist
 
 cd 'api/cmd/portainer'
@@ -6,6 +5,10 @@ cd 'api/cmd/portainer'
 go get -t -d -v ./...
 GOOS=$1 GOARCH=$2 CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags '-s'
 
-ls -la
+if [ $1 == "linux" ] then
+  binary="portainer"
+elif [ $1 == "windpws" ] then
+  binary="portainer.exe"
+fi
 
-# mv "${binary}" "../../../dist/portainer"
+mv "${binary}" "../../../dist/portainer"
