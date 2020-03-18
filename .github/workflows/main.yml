@@ -102,6 +102,7 @@ jobs:
           }
   build_manifests:  
     runs-on: ubuntu-18.04
+    needs: build_images
     steps:     
       - name: Docker Login
         uses: Azure/docker-login@v1
