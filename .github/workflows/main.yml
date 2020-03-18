@@ -28,21 +28,15 @@ jobs:
       
       - name: Build and Push Manifests
         env:
-          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          CONTAINER_MANIFEST_TAG: ${{ steps.extract_branch.outputs.branch }}
           if: github.event.pull_request.labels.name != ''
-          CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
-        run: |
-          echo ${{ github.event.pull_request.labels.name }}
-          
+          CONTINAER_MANIFEST_TAG: pr${{ github.event.pull_request.labels.name }}
+        run: |          
           sed -i 's/}}/}}, "experimental": "enabled"/g' "${DOCKER_CONFIG}/config.json"
           
-          echo ${{ github.event.pull_request.labels.name }}
-          
-          env
-          
           docker -D manifest create \
-              "ssbkang/portainer:$CONTINAER_IMAGE_TAG" \
-              "ssbkang/portainer:$CONTINAER_IMAGE_TAG-linux-amd64" \
-              "ssbkang/portainer:$CONTINAER_IMAGE_TAG-windows1809-amd64"
+              "ssbkang/portainer:$CONTINAER_MANIFEST_TAG" \
+              "ssbkang/portainer:$CONTINAER_MANIFEST_TAG-linux-amd64" \
+              "ssbkang/portainer:$CONTINAER_MANIFEST_TAG-windows1809-amd64"
 
-          docker -D manifest push "ssbkang/portainer:$CONTINAER_IMAGE_TAG"  
+          docker -D manifest push "ssbkang/portainer:$CONTINAER_MANIFEST_TAG"  
