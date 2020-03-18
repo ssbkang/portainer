@@ -54,14 +54,6 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      
-      - name: Set Container Image Tag Based on Branch or PR Number 
-        run: |
-          echo "Image Tag for the container will be: $CONTAINER_IMAGE_TAG"
-        env:
-          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-          if: github.event.pull_request.labels.name != ''
-          CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
           
       - name: Download artifact
         uses: actions/download-artifact@v1.0.0
@@ -76,6 +68,10 @@ jobs:
           # login-server: # default is https://index.docker.io/v1/
         
       - name: Build and Push Linux Docker Images
+        env:
+          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          if: github.event.pull_request.labels.name != ''
+          CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
         if: matrix.config.os == 'linux'
         run: |
           mv dist_${{ matrix.config.os }} dist
@@ -86,6 +82,10 @@ jobs:
           docker push "ssbkang/portainer:${CONTAINER_IMAGE_TAG}"
       
       - name: Build and Push Windows Docker Images
+        env:
+          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          if: github.event.pull_request.labels.name != ''
+          CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
         shell: powershell
         if: matrix.config.os == 'windows'
         run: | 
