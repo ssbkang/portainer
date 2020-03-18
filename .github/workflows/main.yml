@@ -93,15 +93,11 @@ jobs:
 
           $windows_base = @(
             @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1809-amd64"},
-            @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1903-amd64"},
-            @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1909-amd64"}) | % { New-Object object | Add-Member -NotePropertyMembers $_ -PassThru }
+            @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1903-amd64"}) | % { New-Object object | Add-Member -NotePropertyMembers $_ -PassThru }
+            # @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1909-amd64"}) 
 
           foreach ($base in $windows_base) {
-              if ($base.Tag -Match "1909") {
-                docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" --isolation hyperv -t "portainerci/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
-              } else {
-                docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" -t "portainerci/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
-              }
+              docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" -t "portainerci/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
               docker push "portainerci/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)"
           }
           
