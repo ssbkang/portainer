@@ -32,4 +32,13 @@ jobs:
           yarn install          
           grunt release:${{ matrix.os }}:amd64 --gruntfile gruntfile.js
           mv dist dist_${{ matrix.os }}
-          ls -la dist_${{ matrix.os }}
+          ls -la dist_${{ matrix.os }}          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: dist_${{ matrix.os }}
+          path: dist_${{ matrix.os }}
+#  build_container_images:
+#     strategy:
+#      matrix:
+#        os: [linux, windows]
