@@ -41,21 +41,17 @@ jobs:
     needs: build_artefacts
     strategy:
       matrix:
-        os: [linux, windows]
-    if: matrix.os == "linux"
-    env:
-      RUNS_ON: "ubuntu-18.04"
-    if: matrix.os == "windows"
-    env:
-      RUNS_ON: "windows-2019"
+        config: 
+          - {os: linux, distribution: ubuntu-18.04}
+          - {os: windows, distribution: windows-2019}
     
-    runs_on: ${{ env.RUNS_ON }}
+    runs-on: ${{ matrix.config.distribution }}
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v1.0.0
         with:
-          name: dist_${{ matrix.os }}
-          path: dist_${{ matrix.os }}
+          name: dist_${{ ${{ matrix.os.distribution }} }}
+          path: dist_${{ ${{ matrix.os.distribution }} }}
       - name: Build Docker Images
         run: |
           ls
