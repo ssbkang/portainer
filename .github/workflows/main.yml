@@ -87,7 +87,9 @@ jobs:
           } else {
               $prefix = "${{ steps.extract_branch.outputs.branch }}"
           }
-
+          
+          $prefix
+          
           $windows_base = @(
               @{Image="microsoft/nanoserver";Tag="sac2016"},
               @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1803-amd64"},
@@ -96,6 +98,6 @@ jobs:
               @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1909-amd64"}) | % { New-Object object | Add-Member -NotePropertyMembers $_ -PassThru }
 
           foreach ($base in $windows_base) {
-              docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" -t "ssbkang/portainer:$($prefix)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
-              
+              $base.Image
+              $base.Tag
           }
