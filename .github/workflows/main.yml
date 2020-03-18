@@ -37,7 +37,7 @@ jobs:
         with:
           name: dist_${{ matrix.os }}
           path: dist_${{ matrix.os }}
-  build_and_push_container_images:
+  build_and_container_images:
     needs: build_artefacts
     strategy:
       matrix:        
@@ -95,7 +95,7 @@ jobs:
             # @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1909-amd64"}) 
 
           foreach ($base in $windows_base) {
-              docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" -t "portainerci/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
-              docker push "portainerci/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)"
+              docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" -t "ssbkang/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
+              docker push "ssbkang/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)"
           }
           
