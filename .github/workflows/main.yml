@@ -129,7 +129,11 @@ jobs:
           CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
         run: |
           sed -i 's/}}/}}, "experimental": "enabled"/g' "${DOCKER_CONFIG}/config.json"
-          cat ${DOCKER_CONFIG}/config.json
+          
+          echo ${{ github.event.pull_request.labels.name }}
+          
+          env
+          
           docker -D manifest create \
               "ssbkang/portainer:$CONTINAER_IMAGE_TAG" \
               "ssbkang/portainer:$CONTINAER_IMAGE_TAG-linux-amd64" \
