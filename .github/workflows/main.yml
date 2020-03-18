@@ -65,14 +65,6 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           # login-server: # default is https://index.docker.io/v1/
-      - name: Set Environmental Variables
-        if: github.event.pull_request.labels.name
-      - env:
-          CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
-        if: github.event.pull_request.labels.name != ''
-      - env:
-          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-        run: ${{ env.CONTINAER_IMAGE_TAG }}
         
       - name: Build and Push Linux Docker Images
         if: matrix.config.os == 'linux'
