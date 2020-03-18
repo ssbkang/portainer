@@ -42,7 +42,14 @@ jobs:
     strategy:
       matrix:
         os: [linux, windows]
-    runs-on: ${{ matrix.os }}-latest
+    if: matrix.os == "linux"
+    env:
+      RUNS_ON: "ubuntu-18.04"
+    if: matrix.os == "windows"
+    env:
+      RUNS_ON: "windows-2019"
+    
+    runs_on: ${{ env.RUNS_ON }}
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v1.0.0
