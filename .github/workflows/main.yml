@@ -40,8 +40,7 @@ jobs:
   build_and_push_container_images:
     needs: build_artefacts
     strategy:
-      matrix:
-        image: ['mcr.microsoft.com/windows/nanoserver:1809-amd64', 'mcr.microsoft.com/windows/nanoserver:1903-amd64', 'mcr.microsoft.com/windows/nanoserver:1909-amd64']
+      matrix:        
         config: 
         - {os: linux, distribution: ubuntu-18.04}
         - {os: windows, distribution: windows-2019}
@@ -54,11 +53,12 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - name: Set Environmental Variables        
+      - name: Set Container Image Tag From PR
         run: |
-          echo ${{ env.CONTINAER_IMAGE_TAG }}
-        if: github.event.pull_request.labels.name
+          echo "Image Tag for the container will be: ${{ env.CONTINAER_IMAGE_TAG }}"
         env:
+          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          if: github.event.pull_request.labels.name
           CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
         
       - name: Download artifact
