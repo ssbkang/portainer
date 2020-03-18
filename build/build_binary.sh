@@ -11,7 +11,7 @@ cd 'api/cmd/portainer'
 go get -t -d -v ./...
 GOOS="${PLATFORM}" GOARCH="${ARCH}" CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags '-s'
 
-if [ "${PLATFORM}" == "linux" ]; then
+if [[ "${PLATFORM}" == "linux" ]]; then
   binary="portainer"
 else
   binary="portainer.exe"
