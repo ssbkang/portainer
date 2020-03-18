@@ -72,7 +72,8 @@ jobs:
         if: github.event.pull_request.labels.name != ''
       - env:
           CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-
+        run: ${{ env.CONTINAER_IMAGE_TAG }}
+        
       - name: Build and Push Linux Docker Images
         if: matrix.config.os == 'linux'
         run: |
