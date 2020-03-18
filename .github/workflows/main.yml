@@ -43,7 +43,7 @@ jobs:
       matrix:        
         config: 
         - {os: linux, distribution: ubuntu-18.04}
-        - {os: windows, distribution: windows-2019}
+        - {os: windows, distribution: windows-latest}
     
     runs-on: ${{ matrix.config.distribution }}
     steps:
