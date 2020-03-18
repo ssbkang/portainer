@@ -11,8 +11,8 @@ GOOS="${PLATFORM}" GOARCH="${ARCH}" CGO_ENABLED=0 go build -a --installsuffix cg
 
 if [[ "${PLATFORM}" == "linux" ]]; then
   binary="portainer"
-elif [[ "${PLATFORM}" == "windows" ]]; then
+else
   binary="portainer.exe"
 fi
 
-mv "${binary}" "../../../dist/portainer"
+mv "${binary}" "../../../dist/${binary}"
