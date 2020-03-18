@@ -106,8 +106,9 @@ jobs:
               docker push "ssbkang/portainer:$($ENV:CONTAINER_IMAGE_TAG)-windows$($base.Tag)"
           }
   
-  build_manifests:  
+  build_manifests:
     runs-on: ubuntu-18.04
+    needs: build_images
     steps:
       - name: Extract branch name
         shell: bash
