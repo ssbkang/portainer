@@ -26,8 +26,7 @@ jobs:
           if: github.event.pull_request.labels.name != ''
           CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
         run: |
-          cat ${DOCKER_CONFIG}/config.json
-          sed -i 's/}}}/}}}, "experimental": "enabled"/g' "${DOCKER_CONFIG}/config.json"
+          sed -i 's/}}/}}, "experimental": "enabled"/g' "${DOCKER_CONFIG}/config.json"
           cat ${DOCKER_CONFIG}/config.json
           docker -D manifest create \
               "ssbkang/portainer:$CONTINAER_IMAGE_TAG" \
