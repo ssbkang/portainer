@@ -44,6 +44,10 @@ jobs:
         config: 
           - {os: linux, distribution: ubuntu-18.04}
           - {os: windows, distribution: windows-2019}
+        image:
+          - {base: mcr.microsoft.com/windows/nanoserver, tag: 1809-amd64}
+          - {base: mcr.microsoft.com/windows/nanoserver, tag: 1903-amd64}
+          - {base: mcr.microsoft.com/windows/nanoserver, tag: 1909-amd64}
     
     runs-on: ${{ matrix.config.distribution }}
     steps:
@@ -64,40 +68,25 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           # login-server: # default is https://index.docker.io/v1/
+      - name: Set Environmental Variables
+        if: github.event.pull_request.labels.name
+      - env:
+          CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
+        if: github.event.pull_request.labels.name != ''
+      - env:
+          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+
       - name: Build and Push Linux Docker Images
         if: matrix.config.os == 'linux'
         run: |
           mv dist_${{ matrix.config.os }} dist
           
-          if [ ${{ github.event.pull_request.labels.name }} ]; then
-            export CONTAINER_IMAGE_TAG="pr${{ github.event.pull_request.labels.name }}-linux-amd64"
-          else
-            export CONTAINER_IMAGE_TAG="${{ steps.extract_branch.outputs.branch }}-linux-amd64"
-          fi
-          
-          docker build -t "ssbkang/portainer:${CONTAINER_IMAGE_TAG}" -f build/linux/Dockerfile .
-          docker push "ssbkang/portainer:${CONTAINER_IMAGE_TAG}"
+          docker build -t "ssbkang/portainer:$CONTAINER_IMAGE_TAG" -f build/linux/Dockerfile .
+          docker push "ssbkang/portainer:$CONTAINER_IMAGE_TAG"
       - name: Build and Push Windows Docker Images
+        shell: powershell
         if: matrix.config.os == 'windows'
         run: |
-          ls
-          
-          if (${{ github.event.pull_request.labels.name }}) {
-              $prefix = "pr${{ github.event.pull_request.labels.name }}"
-          } else {
-              $prefix = "${{ steps.extract_branch.outputs.branch }}"
-          }
-          
-          $prefix
-          
-          $windows_base = @(
-              @{Image="microsoft/nanoserver";Tag="sac2016"},
-              @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1803-amd64"},
-              @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1809-amd64"},
-              @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1903-amd64"},
-              @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1909-amd64"}) | % { New-Object object | Add-Member -NotePropertyMembers $_ -PassThru }
+          mv dist_${{ matrix.config.os }} dist
 
-          foreach ($base in $windows_base) {
-            $base.Image
-            $base.Tag
-          }
+          ls
