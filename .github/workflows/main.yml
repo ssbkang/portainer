@@ -12,6 +12,9 @@ on:
 
 jobs:
   build_artefacts:
+    strategy:
+      matrix:
+        os: [linux, windows]
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout the current branch
@@ -27,8 +30,6 @@ jobs:
       - name: Build Linux & Windows Portainer Binaries
         run: |
           yarn install          
-          grunt release:linux:amd64 --gruntfile gruntfile.js
-          mv dist dist_linux_amd64
-          ls -la
-          ls -la dist_linux_amd64
-          grunt release:windows:amd64 --gruntfile gruntfile.js
+          grunt release:${{ matrix.os }}:amd64 --gruntfile gruntfile.js
+          mv dist dist_${{ matrix.os }}
+          ls -la dist_${{ matrix.os }}
