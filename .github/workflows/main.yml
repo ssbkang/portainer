@@ -58,6 +58,7 @@ jobs:
         if: github.event.pull_request.labels.name
       - env:
           CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
+        run: ${{ env.CONTINAER_IMAGE_TAG }}
         if: github.event.pull_request.labels.name != ''
       - env:
           CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
