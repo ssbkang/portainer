@@ -97,5 +97,5 @@ jobs:
 
           foreach ($base in $windows_base) {
               docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" -t "ssbkang/portainer:$($prefix)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
-              docker push "ssbkang/portainer:$($prefix)-$($base.Tag)"
+              
           }
