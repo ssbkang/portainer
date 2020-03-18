@@ -11,97 +11,7 @@ on:
       - '*'
 
 jobs:
-  build_artefacts:
-    strategy:
-      matrix:
-        os: [linux, windows]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the Current Branch
-        uses: actions/checkout@v2
-      - name: Setup Go
-        uses: actions/setup-go@v1.0.0
-        with:
-          version: 1.13.1
-      - name: Setup NodeJS and Yarn
-        uses: actions/setup-node@v1
-        with:
-          node-version: '11.15.0'
-      - name: Build Linux & Windows Portainer Binaries
-        run: |
-          yarn install          
-          grunt release:${{ matrix.os }}:amd64 --gruntfile gruntfile.js
-          mv dist dist_${{ matrix.os }}         
-      - name: Upload Artefact
-        uses: actions/upload-artifact@v1.0.0
-        with:
-          name: dist_${{ matrix.os }}
-          path: dist_${{ matrix.os }}
-  build_images:
-    needs: build_artefacts
-    strategy:
-      matrix:        
-        config: 
-        - {os: linux, distribution: ubuntu-18.04}
-        - {os: windows, distribution: windows-latest}
-    
-    runs-on: ${{ matrix.config.distribution }}
-    steps:
-      - name: Checkout the Current Branch
-        uses: actions/checkout@v2
-      
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-          
-      - name: Download artifact
-        uses: actions/download-artifact@v1.0.0
-        with:
-          name: dist_${{ matrix.config.os }}
-          path: dist_${{ matrix.config.os }}
-      - name: Docker Login
-        uses: Azure/docker-login@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          # login-server: # default is https://index.docker.io/v1/
-        
-      - name: Build and Push Linux Docker Images
-        env:
-          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-          if: github.event.pull_request.labels.name != ''
-          CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
-        if: matrix.config.os == 'linux'
-        run: |
-          mv dist_${{ matrix.config.os }} dist
-          
-          docker build -t "ssbkang/portainer:${CONTAINER_IMAGE_TAG}" -f build/linux/Dockerfile .
-          docker push "ssbkang/portainer:${CONTAINER_IMAGE_TAG}"
-      
-      - name: Build and Push Windows Docker Images
-        env:
-          CONTAINER_IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-          if: github.event.pull_request.labels.name != ''
-          CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
-        shell: powershell
-        if: matrix.config.os == 'windows'
-        run: | 
-          mv dist_${{ matrix.config.os }} dist
-          
-          systeminfo
-          
-          $windows_base = @(
-            @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1809-amd64"}) | % { New-Object object | Add-Member -NotePropertyMembers $_ -PassThru }
-            # @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1903-amd64"}),
-            # @{Image="mcr.microsoft.com/windows/nanoserver";Tag="1909-amd64"}) 
-
-          foreach ($base in $windows_base) {
-              docker build . --build-arg BASE_IMAGE="$($base.Image)" --build-arg BASE_TAG="$($base.Tag)" -t "ssbkang/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)" -f "build\windows2016\nanoserver\Dockerfile"
-              docker push "ssbkang/portainer:$($ENV:CONTAINER_IMAGE_TAG)-$($base.Tag)"
-          }
-  build_manifests:
-    needs: build_images    
+  build_manifests:  
     runs-on: ubuntu-18.04
     steps:     
       - name: Docker Login
@@ -117,14 +27,10 @@ jobs:
           CONTINAER_IMAGE_TAG: pr${{ github.event.pull_request.labels.name }}
         run: |
           sed -i 's/"VSTS"}/"VSTS"}, "experimental": "enabled"/g' "${DOCKER_CONFIG}/config.json"
+          cat ${DOCKER_CONFIG}/config.json
+          # docker -D manifest create \
+          #     "ssbkang/portainer:$CONTINAER_IMAGE_TAG" \
+          #     "ssbkang/portainer:$CONTINAER_IMAGE_TAG-linux-amd64" \
+          #     "ssbkang/portainer:$CONTINAER_IMAGE_TAG-windows1809-amd64"
 
-          docker -D manifest create \
-              "ssbkang/portainer:$CONTINAER_IMAGE_TAG" \
-              "ssbkang/portainer:$CONTINAER_IMAGE_TAG-linux-amd64" \
-              "ssbkang/portainer:$CONTINAER_IMAGE_TAG-windows1809-amd64"
-
-          docker -D manifest create \
-              "ssbkang/portainer:$CONTINAER_IMAGE_TAG" \
-              "ssbkang/portainer:$CONTINAER_IMAGE_TAG-linux-amd64"
-
-          docker -D manifest push "ssbkang/portainer:$CONTINAER_IMAGE_TAG"         
+          # docker -D manifest push "ssbkang/portainer:$CONTINAER_IMAGE_TAG"         
