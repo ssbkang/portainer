@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [linux, windows]
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the current branch
         uses: actions/checkout@v2
@@ -31,14 +31,16 @@ jobs:
         run: |
           yarn install          
           grunt release:${{ matrix.os }}:amd64 --gruntfile gruntfile.js
-          mv dist dist_${{ matrix.os }}
-          ls -la dist_${{ matrix.os }}          
+          mv dist dist_${{ matrix.os }}         
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
         with:
           name: dist_${{ matrix.os }}
           path: dist_${{ matrix.os }}
-#  build_container_images:
-#     strategy:
-#      matrix:
-#        os: [linux, windows]
+  build_container_images:
+    needs: build_artefacts
+    strategy:
+      matrix:
+        os: [linux, windows]
+    runs-on: ${{ matrix.os }}-latest
+      
