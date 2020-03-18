@@ -54,12 +54,13 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - name: Set Environmental Variables
+      - name: Set Environmental Variables        
+        run: |
+          echo ${{ env.CONTINAER_IMAGE_TAG }}
         if: github.event.pull_request.labels.name
       - env:
           CONTINAER_IMAGE_TAG: ${{ github.event.pull_request.labels.name }}
-        run: |
-          echo ${{ env.CONTINAER_IMAGE_TAG }}
+        
       - name: Download artifact
         uses: actions/download-artifact@v1.0.0
         with:
