@@ -1,8 +1,6 @@
+#!/usr/bin/env bash
 PLATFORM=$1
 ARCH=$2
-
-echo $PLATFORM
-echo $ARCH
 
 mkdir -p dist
 
