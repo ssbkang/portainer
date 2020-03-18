@@ -47,11 +47,14 @@ jobs:
     
     runs-on: ${{ matrix.config.distribution }}
     steps:
+      - name: Checkout the Current Branch
+        uses: actions/checkout@v2
       - name: Download artifact
         uses: actions/download-artifact@v1.0.0
         with:
-          name: dist_${{ matrix.os.distribution }}
-          path: dist_${{ matrix.os.distribution }}
+          name: dist_${{ matrix.config.os }}
+          path: dist_${{ matrix.config.os }}
       - name: Build Docker Images
         run: |
           ls
+          docker version
